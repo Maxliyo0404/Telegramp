@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Telegraph — Simple. Secure. Reliable messaging.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #101A3D;
+    --ink-soft: #2A3560;
+    --red: #FF3B5C;
+    --red-deep: #E22B4C;
+    --red-tint: #FFE9EC;
+    --paper: #FFFFFF;
+    --mist: #F6F7FB;
+    --line: #E7E9F2;
+    --slate: #6B7290;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; margin: 0; letter-spacing: -0.01em; }
+  p { color: var(--slate); line-height: 1.7; margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { max-width: 100%; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- NAV ---------- */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    padding-top: calc(18px + env(safe-area-inset-top, 0px));
+    padding-bottom: 18px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s ease, box-shadow .3s ease;
+  }
+  header.scrolled { border-color: var(--line); box-shadow: 0 4px 24px rgba(16,26,61,0.05); }
+  nav.wrap { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 21px; font-weight: 700; color: var(--red); display: flex; align-items: center; gap: 8px; }
+  .logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: .4; } }
+  .navlinks { display: flex; gap: 36px; font-size: 14.5px; font-weight: 500; color: var(--ink-soft); }
+  .navlinks a { position: relative; padding: 4px 0; }
+  .navlinks a::after {
+    content: ''; position: absolute; left: 0; bottom: -2px; width: 0; height: 2px;
+    background: var(--red); transition: width .25s ease;
+  }
+  .navlinks a:hover::after { width: 100%; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 26px; border-radius: 999px; font-weight: 600; font-size: 14.5px;
+    cursor: pointer; border: none; transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn-primary { background: var(--red); color: #fff; box-shadow: 0 10px 24px rgba(255,59,92,0.32); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(255,59,92,0.42); background: var(--red-deep); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .btn-ghost:hover { border-color: var(--ink); }
+
+  /* ---------- HERO ---------- */
+  .hero { position: relative; padding: 96px 0 60px; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
+  .eyebrow-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px;
+    background: var(--red-tint); color: var(--red-deep); border-radius: 999px; font-size: 13px; font-weight: 600;
+    margin-bottom: 22px;
+  }
+  .eyebrow-badge span.pip { background: var(--red); color: #fff; border-radius: 999px; padding: 2px 9px; font-size: 11px; }
+  h1.hero-title { font-size: clamp(38px, 4.6vw, 56px); line-height: 1.08; font-weight: 700; color: var(--ink); }
+  h1.hero-title .accent { color: var(--red); }
+  .hero p.lead { margin-top: 22px; font-size: 17px; max-width: 460px; }
+  .hero-cta { margin-top: 34px; display: flex; gap: 14px; align-items: center; }
+  .hero-note { font-size: 13.5px; color: var(--slate); margin-top: 16px; }
+
+  /* phone illustration */
+  .phone-stage { position: relative; height: 460px; }
+  .orbit-ring {
+    position: absolute; border: 1.5px dashed #F0D4DA; border-radius: 50%;
+    left: 50%; top: 50%; transform: translate(-50%,-50%);
+  }
+  .orbit-ring.r1 { width: 380px; height: 380px; animation: spin 40s linear infinite; }
+  .orbit-ring.r2 { width: 300px; height: 300px; animation: spin 30s linear infinite reverse; }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+  .avatar {
+    position: absolute; width: 46px; height: 46px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff;
+    box-shadow: 0 8px 18px rgba(16,26,61,0.18); border: 3px solid #fff;
+    animation: bob 4.5s ease-in-out infinite;
+  }
+  .avatar:nth-child(odd) { animation-delay: .6s; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .a1 { background: #FF7A93; top: 6%; left: 46%; }
+  .a2 { background: #6C7BFF; top: 24%; left: 84%; }
+  .a3 { background: #2BC48A; top: 68%; left: 88%; }
+  .a4 { background: #FFB648; top: 88%; left: 40%; }
+  .a5 { background: #A56CFF; top: 60%; left: 2%; }
+  .a6 { background: #FF6262; top: 18%; left: 0%; }
+
+  .phones { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 280px; }
+  .phone {
+    position: absolute; width: 172px; height: 340px; background: #fff; border-radius: 26px;
+    box-shadow: 0 30px 60px rgba(16,26,61,0.22); border: 6px solid #101A3D; overflow: hidden;
+  }
+  .phone.back { transform: translate(64px, 18px) rotate(6deg); opacity: .9; z-index: 1; }
+  .phone.front { transform: translate(-30px, -6px) rotate(-6deg); z-index: 2; }
+  .phone-bar { height: 34px; background: var(--ink); display: flex; align-items: center; padding: 0 12px; }
+  .phone-bar .p-dot { width: 26px; height: 26px; border-radius: 50%; background: #FF7A93; margin-right: 8px; }
+  .phone-bar .p-line { width: 60px; height: 6px; background: rgba(255,255,255,0.35); border-radius: 3px; }
+  .phone-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .bubble { border-radius: 12px; padding: 8px 10px; font-size: 10px; max-width: 78%; opacity: 0; animation: rise .6s ease forwards; }
+  .bubble.in { background: var(--mist); align-self: flex-start; border-bottom-left-radius: 2px; }
+  .bubble.out { background: var(--red); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .bubble.line { height: 8px; width: 70px; background: currentColor; opacity: .25; border-radius: 4px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .b1 { animation-delay: .3s; } .b2 { animation-delay: .9s; } .b3 { animation-delay: 1.5s; } .b4 { animation-delay: 2.1s; } .b5 { animation-delay: 2.7s; }
+
+  /* ---------- PLATFORMS ---------- */
+  .platform-strip { padding: 44px 0 70px; }
+  .platform-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .platform-card {
+    border: 1px solid var(--line); border-radius: 18px; padding: 26px; background: var(--paper);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .platform-card:hover { transform: translateY(-6px); box-shadow: 0 18px 34px rgba(16,26,61,0.09); border-color: var(--line); }
+  .platform-icon { width: 40px; height: 40px; margin-bottom: 14px; }
+  .platform-card h3 { font-size: 16.5px; margin-bottom: 6px; }
+  .platform-card p { font-size: 13.5px; }
+  .platform-try { margin-top: 14px; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--red); }
+
+  /* ---------- FEATURE ROWS ---------- */
+  .feature-row { padding: 66px 0; }
+  .feature-row .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .feature-row.reverse .wrap { direction: rtl; }
+  .feature-row.reverse .wrap > * { direction: ltr; }
+  .feature-visual { position: relative; }
+  .chat-card {
+    background: var(--mist); border-radius: 22px; padding: 22px; position: relative; overflow: hidden;
+  }
+  .chat-thread { display: flex; flex-direction: column; gap: 12px; }
+  .thread-row { display: flex; align-items: center; gap: 12px; background: #fff; padding: 12px 14px; border-radius: 14px; box-shadow: 0 6px 18px rgba(16,26,61,0.06); opacity: 0; transform: translateX(-16px); }
+  .thread-row .av { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; }
+  .thread-row .meta { flex: 1; min-width: 0; }
+  .thread-row .name { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .thread-row .snippet { font-size: 12px; color: var(--slate); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .thread-row .time { font-size: 11px; color: var(--slate); flex-shrink: 0; }
+  .badge-new { background: var(--red); color:#fff; font-size:10px; font-weight:700; border-radius: 999px; padding: 2px 7px; margin-left: 6px; }
+
+  .feature-eyebrow { font-size: 13px; font-weight: 600; color: var(--red); margin-bottom: 12px; display:flex; align-items:center; gap:8px;}
+  .feature-eyebrow .bar { width: 20px; height: 2px; background: var(--red); }
+  .feature-row h2 { font-size: clamp(26px, 3vw, 34px); line-height: 1.18; margin-bottom: 16px; }
+  .feature-row p.body { font-size: 15.5px; max-width: 440px; }
+  .feature-row p.body + p.body { margin-top: 12px; }
+
+  .cardset { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .mini-card { border: 1px solid var(--line); border-radius: 16px; padding: 22px 18px; transition: transform .25s ease, box-shadow .25s ease; }
+  .mini-card:hover { transform: translateY(-5px); box-shadow: 0 16px 30px rgba(16,26,61,0.08); }
+  .mini-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--red-tint); display:flex; align-items:center; justify-content:center; margin-bottom: 14px; }
+  .mini-card h3 { font-size: 15.5px; margin-bottom: 6px; }
+  .mini-card p { font-size: 13px; }
+
+  /* group section */
+  .group-visual { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; }
+  .group-photo-ring { position: relative; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #FFF0F2, #FFE0E6); display:flex; align-items:center; justify-content:center; }
+  .group-photo-ring .center-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--red); display:flex; align-items:center; justify-content:center; box-shadow: 0 14px 30px rgba(255,59,92,0.35); }
+  .group-avatar { position: absolute; width: 44px; height: 44px; border-radius: 50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:13px; border: 3px solid #fff; box-shadow: 0 8px 18px rgba(16,26,61,0.15); }
+  .g1{ top: -6px; left: 30px; background:#6C7BFF;} .g2{ top: 40px; right: -10px; background:#2BC48A;} .g3{ bottom: 10px; right: 40px; background:#FFB648;} .g4{ bottom: -6px; left: 60px; background:#A56CFF;} .g5{ top: 60px; left: -14px; background:#FF7A93;}
+
+  /* ---------- CTA BANNER ---------- */
+  .cta-banner { margin: 40px 0 90px; }
+  .cta-inner {
+    background: linear-gradient(135deg, #101A3D 0%, #1B2B5C 100%);
+    border-radius: 28px; padding: 64px 40px; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-inner::before, .cta-inner::after {
+    content: ''; position: absolute; border-radius: 50%; opacity: .12; background: var(--red);
+  }
+  .cta-inner::before { width: 300px; height: 300px; top: -140px; left: -80px; }
+  .cta-inner::after { width: 220px; height: 220px; bottom: -110px; right: -40px; }
+  .cta-inner h2 { color: #fff; font-size: clamp(24px, 3vw, 32px); margin-bottom: 12px; position: relative; }
+  .cta-inner p { color: #B9C0DE; max-width: 460px; margin: 0 auto 30px; position: relative; }
+  .cta-inner .btn-primary { position: relative; }
+
+  /* ---------- FOOTER ---------- */
+  footer { border-top: 1px solid var(--line); padding: 34px 0; }
+  footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+  .footer-copy { font-size: 13px; color: var(--slate); }
+  .footer-social { display: flex; gap: 20px; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+  .footer-social a:hover { color: var(--red); }
+
+  /* reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .phone-stage { height: 360px; margin-top: 20px; }
+    .platform-grid { grid-template-columns: 1fr; }
+    .feature-row .wrap, .feature-row.reverse .wrap { grid-template-columns: 1fr; direction: ltr; }
+    .feature-visual { order: -1; }
+    .cardset { grid-template-columns: 1fr; }
+    .navlinks { display: none; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0B1024; --mist: #131A38; --ink: #F3F5FC; --ink-soft: #C7CCE4; --slate: #97A0C4; --line: #232B52;
+    }
+    body { background: var(--paper); }
+    header { background: rgba(11,16,36,0.8); }
+    .thread-row, .phone { background: #131A38; }
+    .phone { border-color: #F3F5FC; }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0B1024; --mist: #131A38; --ink: #F3F5FC; --ink-soft: #C7CCE4; --slate: #97A0C4; --line: #232B52;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav class="wrap">
+    <div class="logo"><span class="dot"></span>Telegraph</div>
+    <div class="navlinks">
+      <a href="#features">Features</a>
+      <a href="#platforms">Platforms</a>
+      <a href="#community">Community</a>
+    </div>
+    <a href="#cta" class="btn btn-primary">Try Beta</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow-badge"><span class="pip">New</span> Now in open beta</div>
+      <h1 class="hero-title">Simple. Secure.<br><span class="accent">Reliable</span> messaging.</h1>
+      <p class="lead">Telegraph keeps every conversation — one-on-one or with your whole group — fast, private, and in sync across every device you own.</p>
+      <div class="hero-cta">
+        <a href="#cta" class="btn btn-primary">Get Telegraph free</a>
+        <a href="#features" class="btn btn-ghost">See how it works</a>
+      </div>
+      <div class="hero-note">No credit card needed · Free for individuals and small groups</div>
+    </div>
+
+    <div class="phone-stage">
+      <div class="orbit-ring r1"></div>
+      <div class="orbit-ring r2"></div>
+      <div class="avatar a1">JM</div>
+      <div class="avatar a2">RK</div>
+      <div class="avatar a3">SO</div>
+      <div class="avatar a4">TL</div>
+      <div class="avatar a5">NB</div>
+      <div class="avatar a6">AV</div>
+
+      <div class="phones">
+        <div class="phone back">
+          <div class="phone-bar"><div class="p-dot"></div><div class="p-line"></div></div>
+          <div class="phone-body">
+            <div class="bubble in b1">Sounds good, see you then</div>
+            <div class="bubble out b2">On my way 🚴</div>
+            <div class="bubble in b3">Perfect, we're already here</div>
+          </div>
+        </div>
+        <div class="phone front">
+          <div class="phone-bar"><div class="p-dot"></div><div class="p-line"></div></div>
+          <div class="phone-body">
+            <div class="bubble in b1">Chats</div>
+            <div class="bubble in b2">Team stand-up moved to 10</div>
+            <div class="bubble out b3">Got it, thanks!</div>
+            <div class="bubble in b4">Sent the files 📎</div>
+            <div class="bubble out b5">Reviewing now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="platform-strip" id="platforms">
+  <div class="wrap platform-grid">
+    <div class="platform-card reveal">
+      <svg class="platform-icon" viewBox="0 0 24 24" fill="none"><path d="M6 18c0 .55.45 1 1 1h1v2.5a1.5 1.5 0 003 0V19h2v2.5a1.5 1.5 0 003 0V19h1c.55 0 1-.45 1-1V9H6v9zM17.5 9v6a1 1 0 002 0V9a1 1 0 00-2 0zM4.5 9v6a1 1 0 002 0V9a1 1 0 00-2 0zM15.8 4.4l1.05-1.83a.35.35 0 10-.6-.35l-1.07 1.85A5.9 5.9 0 0012 3.5c-1.2 0-2.32.28-3.18.57L7.75 2.22a.35.35 0 10-.6.35L8.2 4.4A5.6 5.6 0 006 8h12a5.6 5.6 0 00-2.2-3.6z" fill="#2BC48A"/><circle cx="9.5" cy="6.3" r=".6" fill="#fff"/><circle cx="14.5" cy="6.3" r=".6" fill="#fff"/></svg>
+      <h3>Android</h3>
+      <p>Full-featured native app tuned for phones and tablets, with quiet background sync.</p>
+      <div class="platform-try">Try beta for free →</div>
+    </div>
+    <div class="platform-card reveal">
+      <svg class="platform-icon" viewBox="0 0 24 24" fill="none"><path d="M17.05 12.6c-.03-2.5 2.04-3.7 2.13-3.76-1.16-1.7-2.97-1.93-3.61-1.96-1.53-.16-3 .9-3.78.9-.78 0-1.98-.88-3.26-.86-1.68.03-3.23.98-4.09 2.48-1.75 3.03-.45 7.5 1.25 9.96.83 1.2 1.82 2.55 3.12 2.5 1.25-.05 1.72-.81 3.23-.81 1.5 0 1.93.81 3.25.79 1.34-.02 2.19-1.22 3.01-2.42.95-1.38 1.34-2.72 1.36-2.79-.03-.01-2.6-1-2.62-3.97-.02-2.48 2.02-3.66 2.01-3.06z" fill="#101A3D"/><path d="M14.9 5.02c.68-.83 1.14-1.98 1.01-3.12-.98.04-2.16.65-2.86 1.48-.63.73-1.18 1.9-1.03 3.02 1.1.09 2.2-.55 2.88-1.38z" fill="#101A3D"/></svg>
+      <h3>iPhone</h3>
+      <p>Deep iOS integration — Face ID lock, live activities, and iCloud-synced backups.</p>
+      <div class="platform-try">Try beta for free →</div>
+    </div>
+    <div class="platform-card reveal">
+      <svg class="platform-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="8" height="8" fill="#FF3B5C"/><rect x="13" y="4" width="8" height="8" fill="#6C7BFF"/><rect x="3" y="14" width="8" height="8" fill="#FFB648"/><rect x="13" y="14" width="8" height="8" fill="#2BC48A"/></svg>
+      <h3>Mac or Windows</h3>
+      <p>A focused desktop app that mirrors your phone instantly — no separate account needed.</p>
+      <div class="platform-try">Try beta for free →</div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-row" id="features">
+  <div class="wrap">
+    <div class="feature-visual reveal">
+      <div class="chat-card">
+        <div class="chat-thread">
+          <div class="thread-row" style="animation: rise .6s ease forwards .1s;">
+            <div class="av" style="background:#FF7A93">W</div>
+            <div class="meta"><div class="name">Wife</div><div class="snippet">Dinner at 7? I'll pick up the kids</div></div>
+            <div class="time">11:39</div>
+          </div>
+          <div class="thread-row" style="animation: rise .6s ease forwards .35s;">
+            <div class="av" style="background:#6C7BFF">G</div>
+            <div class="meta"><div class="name">Girlfriend group</div><div class="snippet">Sara: I'm running 5 mins late</div></div>
+            <div class="time">11:36</div>
+          </div>
+          <div class="thread-row" style="animation: rise .6s ease forwards .6s;">
+            <div class="av" style="background:#2BC48A">?</div>
+            <div class="meta"><div class="name">Unknown number <span class="badge-new">NEW</span></div><div class="snippet">Hi — is this the right group for tonight?</div></div>
+            <div class="time">11:20</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="feature-eyebrow"><span class="bar"></span>Real-time</div>
+      <h2>Simple, personal, real-time messaging.</h2>
+      <p class="body">Messages land the instant they're sent — no spinners, no "delivering." Telegraph keeps a live connection open so conversations feel like you're in the same room.</p>
+      <p class="body">Typing indicators, read receipts, and reactions are all on by default, and you can turn any of them off per conversation.</p>
+    </div>
+  </div>
+</section>
+
+<section class="feature-row reverse">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="feature-eyebrow"><span class="bar"></span>Built-in protection</div>
+      <h2>Sharing cool stuff with your community, without the risk.</h2>
+      <p class="body">Every message and file is end-to-end encrypted by default, so conversations stay between the people in them — not stored, not scanned, not sold.</p>
+      <div class="cardset" style="margin-top:26px;">
+        <div class="mini-card">
+          <div class="mini-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 3v6c0 5-3.4 8.6-8 11-4.6-2.4-8-6-8-11V5l8-3z" fill="var(--red)"/></svg></div>
+          <h3>Security by default</h3>
+          <p>End-to-end encryption on every chat, with no setup required.</p>
+        </div>
+        <div class="mini-card">
+          <div class="mini-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="2.5" fill="var(--red)"/><circle cx="18" cy="6" r="2.5" fill="var(--red)"/><circle cx="18" cy="18" r="2.5" fill="var(--red)"/><path d="M8.2 11l7.6-4M8.2 13l7.6 4" stroke="var(--red)" stroke-width="1.6"/></svg></div>
+          <h3>Document share</h3>
+          <p>Send files up to 2GB, kept only as long as your chat needs them.</p>
+        </div>
+        <div class="mini-card">
+          <div class="mini-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v10H8l-4 4V5z" fill="var(--red)"/></svg></div>
+          <h3>Say what's on your mind</h3>
+          <p>Voice notes, quick reactions, and threads keep replies unmissable.</p>
+        </div>
+      </div>
+    </div>
+    <div class="feature-visual reveal">
+      <div class="chat-card" style="display:flex; align-items:center; justify-content:center; min-height:300px;">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="70" fill="var(--red-tint)"/>
+          <path d="M100 40l52 20v38c0 33-22 56-52 70-30-14-52-37-52-70V60l52-20z" fill="var(--red)" opacity="0.15"/>
+          <path d="M100 50l40 15v30c0 26-17 44-40 55-23-11-40-29-40-55V65l40-15z" fill="var(--red)"/>
+          <path d="M85 100l10 10 22-22" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-row" id="community">
+  <div class="wrap">
+    <div class="feature-visual reveal">
+      <div class="group-visual">
+        <div class="group-photo-ring">
+          <div class="center-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-8.9 8.5 8.5 8.5 0 01-3.2-.6L3 21l1.7-5A8.4 8.4 0 013 11.5 8.5 8.5 0 0112 3a8.4 8.4 0 019 8.5z" fill="#fff"/></svg>
+          </div>
+          <div class="group-avatar g1">EK</div>
+          <div class="group-avatar g2">MT</div>
+          <div class="group-avatar g3">DP</div>
+          <div class="group-avatar g4">LR</div>
+          <div class="group-avatar g5">YS</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="feature-eyebrow"><span class="bar"></span>Groups</div>
+      <h2>Keep in touch with the groups of people who matter.</h2>
+      <p class="body">Family threads, project teams, old classmates — Telegraph groups scale from 3 people to 300 without losing the parts that make a conversation feel personal.</p>
+      <p class="body">Pin what matters, mute what doesn't, and pick up exactly where you left off on any device.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner" id="cta">
+  <div class="wrap">
+    <div class="cta-inner reveal">
+      <h2>Let's start with the quick app.</h2>
+      <p>Set up takes under a minute. Bring your contacts, pick up your old chats, and you're in.</p>
+      <a href="#" class="btn btn-primary">Get Telegraph free</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-copy">© Telegraph, 2026 — All rights reserved.</div>
+    <div class="footer-social">
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 8);
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
